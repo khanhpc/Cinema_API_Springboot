@@ -131,6 +131,7 @@ public class BookingService {
                     firstBooking.getShowTime().getMovie().getTitle(),
                     firstBooking.getShowTime().getMovie().getPosterUrl(),
                     firstBooking.getShowTime().getRoom().getName(),
+                    firstBooking.getShowTime().getRoom().getCinema().getName(),
                     seatNames,
                     firstBooking.getShowTime().getStartTime(),
                     invoice.getTotalPrice(),

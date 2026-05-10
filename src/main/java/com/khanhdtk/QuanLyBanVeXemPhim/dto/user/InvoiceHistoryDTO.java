@@ -12,6 +12,7 @@ public class InvoiceHistoryDTO {
     private Long invoiceId;
     private String movieTitle;
     private String posterUrl;
+    private String cinemaName;
     private String roomName;
     private List<String> seatNames; // Trả về danh sách ghế: ["J1", "J2", "J3"]
     private LocalDateTime showTime;

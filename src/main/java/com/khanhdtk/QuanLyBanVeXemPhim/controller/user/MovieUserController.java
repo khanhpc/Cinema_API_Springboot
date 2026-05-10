@@ -28,4 +28,10 @@ public class MovieUserController {
         return movieService.getMovie(id);
     }
 
+    @GetMapping("/top-movies")
+    ResponseEntity<List<Movie>> layDanhSachTopMovies() {
+        List<Movie> danhsachMovies = movieService.getTopMovies();
+        return ResponseEntity.ok(danhsachMovies);
+    }
+
 }

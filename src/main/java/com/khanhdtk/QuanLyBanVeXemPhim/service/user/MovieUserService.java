@@ -19,4 +19,8 @@ public class MovieUserService {
     public Movie getMovie(Long id) {
         return movieRepository.findByIdAndDeletedFalse(id);
     }
+
+    public List<Movie> getTopMovies(){
+        return movieRepository.findTopMovies_ChieuNhieuNhat();
+    }
 }
