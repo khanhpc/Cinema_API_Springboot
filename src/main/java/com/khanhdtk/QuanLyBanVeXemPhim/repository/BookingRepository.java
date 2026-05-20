@@ -55,4 +55,13 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByUserIdAndStatusNotOrderByCreatedAtDesc(Long userId, String status);
 
     Long countByUserIdAndStatus(Long userId, String status);
+
+    @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM Booking b " +
+            "JOIN b.showTime st " +
+            "JOIN st.movie m " +
+            "WHERE b.user.id = :userId " +
+            "AND m.id = :movieId " +
+            "AND b.status = 'CONFIRMED' " +
+            "AND st.endTime <= :now")
+    boolean existsWatchedMovie(@Param("userId") Long userId, @Param("movieId") Long movieId, @Param("now") LocalDateTime now);
 }
