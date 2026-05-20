@@ -13,6 +13,8 @@ import com.khanhdtk.QuanLyBanVeXemPhim.repository.MovieRepository;
 import com.khanhdtk.QuanLyBanVeXemPhim.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,8 +30,8 @@ public class MovieCommentService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
 
+    @Cacheable(value = "movie_comments", key = "#movieId")
     public List<MovieCommentResponse> getComments(Long movieId) {
-        // Đảm bảo Repository dùng @EntityGraph("user") để lấy User cùng lúc
         return movieCommentRepository.findByMovieIdOrderByCreatedAtDesc(movieId)
                 .stream()
                 .map(this::toResponse)
@@ -37,42 +39,62 @@ public class MovieCommentService {
     }
 
     @Transactional
-    public MovieCommentResponse createComment(Long movieId, MovieCommentRequest request) {
+    @CacheEvict(value = {"movie_comments", "top_movies"}, key = "#movieId")
+    public MovieCommentResponse createComment(Long movieId,
+                                              MovieCommentRequest request) {
+
+        validateRequest(request);
+
         String email = getCurrentUserEmail();
+
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Người dùng không tồn tại"));
 
         Movie movie = movieRepository.findByIdAndDeletedFalse(movieId);
+
         if (movie == null) {
             throw new ResourceNotFoundException("Phim không tồn tại");
         }
 
-        if (movieCommentRepository.existsByMovieIdAndUserId(movieId, user.getId())) {
-            throw new BadRequestException("Bạn đã để lại đánh giá cho phim này rồi");
+        MovieComment comment = movieCommentRepository
+                .findByMovieIdAndUserId(movieId, user.getId());
+
+        if (comment == null) {
+
+            boolean watchedMovie = bookingRepository.existsWatchedMovie(
+                    user.getId(),
+                    movieId,
+                    LocalDateTime.now()
+            );
+
+            if (!watchedMovie) {
+                throw new BadRequestException(
+                        "Bạn chỉ có thể bình luận sau khi đã xem xong phim"
+                );
+            }
+
+            comment = new MovieComment();
+            comment.setMovie(movie);
+            comment.setUser(user);
+            comment.setCreatedAt(LocalDateTime.now());
         }
 
-        validateRequest(request);
-
-        boolean watchedMovie = bookingRepository.existsWatchedMovie(user.getId(), movieId, LocalDateTime.now());
-        if (!watchedMovie) {
-            throw new BadRequestException("Bạn chỉ có thể bình luận sau khi đã xem xong phim");
-        }
-
-        MovieComment comment = new MovieComment();
-        comment.setMovie(movie);
-        comment.setUser(user);
         comment.setContent(request.getContent().trim());
         comment.setRating(request.getRating());
-        comment.setCreatedAt(LocalDateTime.now());
 
         MovieComment savedComment = movieCommentRepository.save(comment);
+
+        movie.setAvgRating(
+                movieCommentRepository.avgRating(movieId).floatValue()
+        );
 
         return toResponse(savedComment);
     }
 
     private void validateRequest(MovieCommentRequest request) {
-        if (request.getRating() == null || request.getRating() < 1 || request.getRating() > 5) {
-            throw new BadRequestException("Số sao đánh giá phải từ 1 đến 5");
+        if (request.getRating() == null || request.getRating() < 1 || request.getRating() > 10) {
+            throw new BadRequestException("Số sao đánh giá phải từ 1 đến 10");
         }
         if (request.getContent() == null || request.getContent().trim().isBlank()) {
             throw new BadRequestException("Nội dung bình luận không được để trống");

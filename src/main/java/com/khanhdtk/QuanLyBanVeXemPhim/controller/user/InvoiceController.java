@@ -8,6 +8,7 @@ import com.khanhdtk.QuanLyBanVeXemPhim.repository.InvoiceRepository;
 import com.khanhdtk.QuanLyBanVeXemPhim.service.user.BookingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,7 @@ public class InvoiceController {
 
     @PostMapping("/user/invoices/{id}/confirm-payment")
     @Transactional
+    @CacheEvict(value = "top_movies", allEntries = true)
     public ResponseEntity<?> confirmPayment(@PathVariable Long id) {
         Invoice invoice = invoiceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Hóa đơn lỏ rồi bác ơi"));

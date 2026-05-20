@@ -5,6 +5,7 @@ import com.khanhdtk.QuanLyBanVeXemPhim.dto.admin.DailyRevenueResponse;
 import com.khanhdtk.QuanLyBanVeXemPhim.dto.admin.OverviewStatsResponse;
 import com.khanhdtk.QuanLyBanVeXemPhim.dto.admin.TopMovieResponse;
 import com.khanhdtk.QuanLyBanVeXemPhim.service.admin.StatisticsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/stats")
 @CrossOrigin("*")
+@RequiredArgsConstructor
 public class StatisticsController {
 
-    @Autowired
-    private StatisticsService statisticsService;
+    private final StatisticsService statisticsService;
 
     @GetMapping("/overview")
     public ResponseEntity<OverviewStatsResponse> getOverview(

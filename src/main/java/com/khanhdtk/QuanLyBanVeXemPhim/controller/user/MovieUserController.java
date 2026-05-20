@@ -3,6 +3,7 @@ package com.khanhdtk.QuanLyBanVeXemPhim.controller.user;
 import com.khanhdtk.QuanLyBanVeXemPhim.entity.Movie;
 import com.khanhdtk.QuanLyBanVeXemPhim.service.user.MovieUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

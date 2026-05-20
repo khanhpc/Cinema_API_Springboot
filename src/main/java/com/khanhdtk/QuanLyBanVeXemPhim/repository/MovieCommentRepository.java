@@ -17,4 +17,13 @@ public interface MovieCommentRepository extends JpaRepository<MovieComment, Long
     List<MovieComment> findByMovieIdOrderByCreatedAtDesc(Long movieId);
 
     boolean existsByMovieIdAndUserId(Long movieId, Long userId);
+
+    MovieComment findByMovieIdAndUserId(Long movieId, Long userId);
+
+    @Query("""
+            SELECT COALESCE(AVG(mc.rating), 0)
+            FROM MovieComment mc
+            WHERE mc.movie.id = :movieId
+            """)
+    Double avgRating(Long movieId);
 }

@@ -4,6 +4,8 @@ import com.khanhdtk.QuanLyBanVeXemPhim.dto.user.MovieCommentRequest;
 import com.khanhdtk.QuanLyBanVeXemPhim.dto.user.MovieCommentResponse;
 import com.khanhdtk.QuanLyBanVeXemPhim.service.user.MovieCommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,15 +13,16 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class MovieCommentController {
     private final MovieCommentService movieCommentService;
 
-    @GetMapping("api/public/movies/{movieId}/comments")
+    @GetMapping("public/movies/{movieId}/comments")
     public ResponseEntity<List<MovieCommentResponse>> getComments(@PathVariable Long movieId) {
         return ResponseEntity.ok(movieCommentService.getComments(movieId));
     }
 
-    @PostMapping("api/user/movies/{movieId}/comments")
+    @PostMapping("user/movies/{movieId}/comments")
     public ResponseEntity<MovieCommentResponse> createComment(
             @PathVariable Long movieId,
             @RequestBody MovieCommentRequest request

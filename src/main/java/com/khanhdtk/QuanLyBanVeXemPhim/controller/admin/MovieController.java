@@ -4,6 +4,8 @@ package com.khanhdtk.QuanLyBanVeXemPhim.controller.admin;
 import com.khanhdtk.QuanLyBanVeXemPhim.entity.Movie;
 import com.khanhdtk.QuanLyBanVeXemPhim.service.admin.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,7 @@ public class MovieController {
     }
 
     @GetMapping
+    @Cacheable(value = "all_movies")
     public ResponseEntity<List<Movie>> getAllMovies() {
         List<Movie> listMovies = movieService.getAllMovies();
         return ResponseEntity.ok(listMovies);

@@ -5,6 +5,7 @@ import com.khanhdtk.QuanLyBanVeXemPhim.exception.ResourceNotFoundException;
 import com.khanhdtk.QuanLyBanVeXemPhim.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,6 +24,7 @@ public class MovieService {
 
     private final String TMDB_URL = "https://api.themoviedb.org/3/movie/";
 
+    @CacheEvict(value = "all_movies", allEntries = true)
     public Movie addMovieFromTMDB(Long tmdbId) {
         String url = TMDB_URL + tmdbId + "?api_key=" + apiKey + "&language=vi-VN";
 
@@ -106,6 +108,7 @@ public class MovieService {
         return movieRepository.findAllByDeletedFalse();
     }
 
+    @CacheEvict(value = "all_movies", allEntries = true)
     public void deleteMovie(Long id) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phim này"));
