@@ -185,7 +185,7 @@ public class BookingService {
     }
 
     public List<ComboBongNuoc> getAllCombos() {
-        return comboBongNuocRepository.findAllByDeletedFalse();
+        return comboBongNuocRepository.findAllByDeletedFalseOrderByIdDesc();
     }
 
     public Invoice getInvoice(Long invoiceId) {

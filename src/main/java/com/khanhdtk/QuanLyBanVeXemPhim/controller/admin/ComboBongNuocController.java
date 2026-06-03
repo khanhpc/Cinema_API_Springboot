@@ -3,6 +3,7 @@ package com.khanhdtk.QuanLyBanVeXemPhim.controller.admin;
 import com.khanhdtk.QuanLyBanVeXemPhim.entity.ComboBongNuoc;
 import com.khanhdtk.QuanLyBanVeXemPhim.service.admin.ComboBongNuocService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,5 +29,10 @@ public class ComboBongNuocController {
     public ResponseEntity<?> deleteComboBongNuoc(@PathVariable Long id) {
         comboBongNuocService.deleteComboBongNuoc(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ComboBongNuoc> updateCombo(@RequestBody ComboBongNuoc comboBongNuoc, @PathVariable Long id) {
+        return ResponseEntity.ok(comboBongNuocService.updateCombo(id, comboBongNuoc));
     }
 }

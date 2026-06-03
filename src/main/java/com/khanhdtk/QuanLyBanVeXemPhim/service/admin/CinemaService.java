@@ -21,12 +21,19 @@ public class CinemaService {
     }
 
     public List<Cinema> getALlCinema() {
-        return cinemaRepository.findAllByDeletedFalse();
+        return cinemaRepository.findAllByDeletedFalseOrderByIdAsc();
     }
 
     public void deleteCinema(Long id) {
         Cinema cinema = cinemaRepository.findById(id).orElseThrow();
         cinema.setDeleted(true);
         cinemaRepository.save(cinema);
+    }
+
+    public Cinema updateCinema(Long id, CinemaRequest cinema) {
+        Cinema newCinema = cinemaRepository.findById(id).orElseThrow();
+        newCinema.setLocation(cinema.getLocation());
+        newCinema.setName(cinema.getName());
+        return cinemaRepository.save(newCinema);
     }
 }

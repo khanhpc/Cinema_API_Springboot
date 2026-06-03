@@ -12,6 +12,6 @@ import java.util.List;
 public class CinemaUserService {
     private final CinemaRepository cinemaRepository;
     public List<Cinema> getAllCinema(){
-        return cinemaRepository.findAllByDeletedFalse();
+        return cinemaRepository.findAllByDeletedFalseOrderByIdAsc();
     }
 }
