@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
-    List<Movie> findAllByDeletedFalse();
+    List<Movie> findAllByDeletedFalseOrderByIdDesc();
 
     Movie findByIdAndDeletedFalse(Long id);
 

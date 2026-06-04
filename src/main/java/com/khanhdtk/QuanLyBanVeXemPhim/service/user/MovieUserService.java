@@ -15,7 +15,7 @@ public class MovieUserService {
 
     @Cacheable(value = "all_movies")
     public List<Movie> getAllMovies() {
-        return movieRepository.findAllByDeletedFalse();
+        return movieRepository.findAllByDeletedFalseOrderByIdDesc();
     }
 
     public Movie getMovie(Long id) {

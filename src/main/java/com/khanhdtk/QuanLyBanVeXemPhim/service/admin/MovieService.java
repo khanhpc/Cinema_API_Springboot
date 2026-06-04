@@ -2,6 +2,7 @@ package com.khanhdtk.QuanLyBanVeXemPhim.service.admin;
 
 import com.khanhdtk.QuanLyBanVeXemPhim.entity.Movie;
 import com.khanhdtk.QuanLyBanVeXemPhim.exception.ResourceNotFoundException;
+import com.khanhdtk.QuanLyBanVeXemPhim.repository.MovieCommentRepository;
 import com.khanhdtk.QuanLyBanVeXemPhim.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import java.util.Map;
 public class MovieService {
     private final MovieRepository movieRepository;
     private final RestTemplate restTemplate;
+    private final MovieCommentRepository movieCommentRepository;
 
     @Value("${tmdb.api.key}")
     private String apiKey;
@@ -105,7 +107,7 @@ public class MovieService {
     }
 
     public List<Movie> getAllMovies() {
-        return movieRepository.findAllByDeletedFalse();
+        return movieRepository.findAllByDeletedFalseOrderByIdDesc();
     }
 
     @CacheEvict(value = "all_movies", allEntries = true)
@@ -114,5 +116,29 @@ public class MovieService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phim này"));
         movie.setDeleted(true);
         movieRepository.save(movie);
+    }
+
+    public void updateRatingTest(Long movieId) {
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Movie"));
+
+        Float avg = movieCommentRepository.avgRating(movieId).floatValue();
+        movie.setAvgRating(avg);
+
+        movieRepository.save(movie);
+    }
+
+    public Movie updateMovie(Long id, Movie movie) {
+        Movie existingMovie = movieRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Movie này"));
+
+        existingMovie.setTitle(movie.getTitle());
+        existingMovie.setDuration(movie.getDuration());
+
+        Movie savedMovie = movieRepository.save(existingMovie);
+
+        updateRatingTest(id);
+
+        return savedMovie;
     }
 }
