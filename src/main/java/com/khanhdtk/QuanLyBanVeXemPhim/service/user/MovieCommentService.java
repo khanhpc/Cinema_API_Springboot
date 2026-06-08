@@ -50,10 +50,15 @@ public class MovieCommentService {
                 .map(this::toResponse);
     }
 
+    @Cacheable(value = "movie_comments", key = "#movieId")
+    public Integer countMovieComments(Long movieId) {
+        return movieCommentRepository.countByMovieId(movieId);
+    }
+
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "movie_comments", key = "#movieId + '_' + #page + '_' + #size"),
-            @CacheEvict(value = "top_movies", key = "#movieId")
+            @CacheEvict(value = {"top_movies", "movie_comments"}, key = "#movieId")
     })
     public MovieCommentResponse createComment(Long movieId, MovieCommentRequest request) {
 

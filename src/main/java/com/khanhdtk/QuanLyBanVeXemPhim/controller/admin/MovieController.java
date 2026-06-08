@@ -28,7 +28,7 @@ public class MovieController {
     @PostMapping("/import")
     public ResponseEntity<?> importMovie(@RequestBody List<Movie> movies) {
         for(Movie movie : movies){
-            Movie newMovie = movieService.addMovie(movie);
+            movieService.addMovie(movie);
         }
         return ResponseEntity.ok("Thêm phim thành công");
     }

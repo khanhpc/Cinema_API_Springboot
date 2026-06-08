@@ -73,13 +73,11 @@ public class MovieService {
     }
 
     public Movie addMovie(Movie request) {
-        Movie movie = movieRepository.findById(request.getTmdbId()).orElse(null);
+        Movie movie = movieRepository.findBytitle(request.getTitle()).orElse(null);
 
         if (movie != null) {
-            movie.setDeleted(false);
-            return movieRepository.save(movie);
+            throw new RuntimeException("Phim này đã tồn tại rồi!");
         }
-
         request.setDeleted(false);
         return movieRepository.save(request);
     }
@@ -146,7 +144,11 @@ public class MovieService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Movie này"));
 
         existingMovie.setTitle(movie.getTitle());
+        existingMovie.setPosterUrl(movie.getPosterUrl());
+        existingMovie.setTrailerUrl(movie.getTrailerUrl());
         existingMovie.setDuration(movie.getDuration());
+        existingMovie.setReleaseDate(movie.getReleaseDate());
+        existingMovie.setDescription(movie.getDescription());
 
         Movie savedMovie = movieRepository.save(existingMovie);
 

@@ -16,6 +16,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     Optional<Movie> findBytmdbId(Long movieId);
 
+    Optional<Movie> findBytitle(String title);
+
     @Query(value = """
             SELECT\s
                 m.*

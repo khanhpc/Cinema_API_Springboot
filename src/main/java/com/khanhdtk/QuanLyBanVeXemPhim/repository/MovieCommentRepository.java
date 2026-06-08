@@ -21,6 +21,8 @@ public interface MovieCommentRepository extends JpaRepository<MovieComment, Long
             Pageable pageable
     );
 
+    Integer countByMovieId(Long movieId);
+
     boolean existsByMovieIdAndUserId(Long movieId, Long userId);
 
     MovieComment findByMovieIdAndUserId(Long movieId, Long userId);
