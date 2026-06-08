@@ -15,6 +15,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -30,18 +34,28 @@ public class MovieCommentService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
 
-    @Cacheable(value = "movie_comments", key = "#movieId")
-    public List<MovieCommentResponse> getComments(Long movieId) {
-        return movieCommentRepository.findByMovieIdOrderByCreatedAtDesc(movieId)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+    @Cacheable(
+            value = "movie_comments",
+            key = "#movieId + '_' + #page + '_' + #size"
+    )
+    public Page<MovieCommentResponse> getComments(
+            Long movieId,
+            int page,
+            int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return movieCommentRepository
+                .findByMovieIdOrderByCreatedAtDesc(movieId, pageable)
+                .map(this::toResponse);
     }
 
     @Transactional
-    @CacheEvict(value = {"movie_comments", "top_movies"}, key = "#movieId")
-    public MovieCommentResponse createComment(Long movieId,
-                                              MovieCommentRequest request) {
+    @Caching(evict = {
+            @CacheEvict(value = "movie_comments", key = "#movieId + '_' + #page + '_' + #size"),
+            @CacheEvict(value = "top_movies", key = "#movieId")
+    })
+    public MovieCommentResponse createComment(Long movieId, MovieCommentRequest request) {
 
         validateRequest(request);
 

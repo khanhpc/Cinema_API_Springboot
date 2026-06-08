@@ -6,6 +6,7 @@ import com.khanhdtk.QuanLyBanVeXemPhim.service.user.MovieCommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +19,14 @@ public class MovieCommentController {
     private final MovieCommentService movieCommentService;
 
     @GetMapping("public/movies/{movieId}/comments")
-    public ResponseEntity<List<MovieCommentResponse>> getComments(@PathVariable Long movieId) {
-        return ResponseEntity.ok(movieCommentService.getComments(movieId));
+    public ResponseEntity<Page<MovieCommentResponse>> getComments(
+            @PathVariable Long movieId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return ResponseEntity.ok(
+                movieCommentService.getComments(movieId, page, size)
+        );
     }
 
     @PostMapping("user/movies/{movieId}/comments")

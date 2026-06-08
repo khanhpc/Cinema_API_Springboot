@@ -1,5 +1,6 @@
 package com.khanhdtk.QuanLyBanVeXemPhim.service.admin;
 
+import com.khanhdtk.QuanLyBanVeXemPhim.controller.admin.MovieController;
 import com.khanhdtk.QuanLyBanVeXemPhim.entity.Movie;
 import com.khanhdtk.QuanLyBanVeXemPhim.exception.ResourceNotFoundException;
 import com.khanhdtk.QuanLyBanVeXemPhim.repository.MovieCommentRepository;
@@ -69,6 +70,18 @@ public class MovieService {
         }
 
         throw new RuntimeException("Không tìm thấy dữ liệu từ TMDB bác ơi!");
+    }
+
+    public Movie addMovie(Movie request) {
+        Movie movie = movieRepository.findById(request.getTmdbId()).orElse(null);
+
+        if (movie != null) {
+            movie.setDeleted(false);
+            return movieRepository.save(movie);
+        }
+
+        request.setDeleted(false);
+        return movieRepository.save(request);
     }
 
 

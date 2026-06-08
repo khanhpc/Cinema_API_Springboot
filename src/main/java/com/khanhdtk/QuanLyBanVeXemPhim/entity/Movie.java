@@ -37,6 +37,6 @@ public class Movie {
 
     private Boolean deleted = false;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "avg_rating")
     private Float avgRating = 0.0F;
 }

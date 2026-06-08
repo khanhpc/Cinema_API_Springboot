@@ -1,6 +1,8 @@
 package com.khanhdtk.QuanLyBanVeXemPhim.repository;
 
 import com.khanhdtk.QuanLyBanVeXemPhim.entity.MovieComment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +16,10 @@ import java.util.List;
 public interface MovieCommentRepository extends JpaRepository<MovieComment, Long> {
 
     @EntityGraph(attributePaths = {"user"})
-    List<MovieComment> findByMovieIdOrderByCreatedAtDesc(Long movieId);
+    Page<MovieComment> findByMovieIdOrderByCreatedAtDesc(
+            Long movieId,
+            Pageable pageable
+    );
 
     boolean existsByMovieIdAndUserId(Long movieId, Long userId);
 

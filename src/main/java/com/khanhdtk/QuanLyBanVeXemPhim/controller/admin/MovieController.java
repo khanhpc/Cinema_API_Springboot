@@ -19,9 +19,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MovieController {
     private final MovieService movieService;
+
     @PostMapping("/import/{tmdbId}")
     public Movie importMovie(@PathVariable Long tmdbId) {
         return movieService.addMovieFromTMDB(tmdbId);
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<?> importMovie(@RequestBody List<Movie> movies) {
+        for(Movie movie : movies){
+            Movie newMovie = movieService.addMovie(movie);
+        }
+        return ResponseEntity.ok("Thêm phim thành công");
     }
 
     @GetMapping
